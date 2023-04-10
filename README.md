@@ -11,11 +11,11 @@ npm install react-native-instantpay-bluetooth
 ## Usage
 
 ```js
-import { multiply } from 'react-native-instantpay-bluetooth';
+import RNBluetooth from 'react-native-instantpay-bluetooth';
 
 // ...
 
-const result = await multiply(3, 7);
+let data = await RNBluetooth.getStatus();
 ```
 
 ## Contributing
@@ -28,4 +28,4 @@ MIT
 
 ---
 
-Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
+Made with [Instantpay](https://www.instantpay.in)

@@ -80,4 +80,4 @@ MIT
 
 ---
 
-Made with ❤️ [Instantpay](https://www.instantpay.in)
+Made with [Instantpay](https://www.instantpay.in)

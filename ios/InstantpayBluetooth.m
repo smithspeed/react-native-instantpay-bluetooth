@@ -3,7 +3,7 @@
 #import "React/RCTEventEmitter.h"
 //#import <CoreBluetooth/CoreBluetooth.h>
 
-@interface RCT_EXTERN_MODULE(Bluetooth, RCTEventEmitter)
+@interface RCT_EXTERN_MODULE(InstantpayBluetooth, RCTEventEmitter)
 
 /* RCT_EXTERN_METHOD(multiply:(float)a withB:(float)b
                  withResolver:(RCTPromiseResolveBlock)resolve

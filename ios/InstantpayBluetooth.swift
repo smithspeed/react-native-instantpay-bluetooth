@@ -41,7 +41,16 @@ class InstantpayBluetooth: RCTEventEmitter, CBCentralManagerDelegate {
             default: getCurrentState = "UNSUPPORTED";
         }
         
-        self.sendEvent(withName: "bluetoothDidUpdateState", body: ["status": getCurrentState])
+        
+        self.sendMyEvent(getCurrentState!);
+        
+    }
+    
+    @objc
+    func sendMyEvent(_ getCurrentState: String) {
+        if hasListeners {
+            self.sendEvent(withName: "bluetoothDidUpdateState", body: ["status": getCurrentState])
+        }
     }
     
     @objc(bluetoothStatus:withResolver:withRejecter:)

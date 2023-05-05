@@ -14,6 +14,14 @@ React Native module for checking Bluetooth state with event listener. Supports b
 npm install react-native-instantpay-bluetooth
 ```
 
+### iOS
+Update your `Info.plist` with wanted permissions usage descriptions:
+
+```xml
+<key>NSBluetoothAlwaysUsageDescription</key>
+<string>YOUR TEXT</string>
+```
+
 ## Manual installation
 ### Android
 1. Open up `android/app/src/main/java/[...]/MainApplication.java`

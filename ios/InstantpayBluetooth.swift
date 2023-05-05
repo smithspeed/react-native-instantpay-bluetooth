@@ -12,8 +12,10 @@ class InstantpayBluetooth: RCTEventEmitter, CBCentralManagerDelegate {
     override init() {
         super.init();
         
-        manager = CBCentralManager()
-        manager.delegate = self
+        
+        
+        //manager = CBCentralManager()
+        //manager.delegate = self
     }
     
     /* @objc(multiply:withB:withResolver:withRejecter:)
@@ -21,52 +23,32 @@ class InstantpayBluetooth: RCTEventEmitter, CBCentralManagerDelegate {
         resolve(a*b)
     } */
     
-    func centralManagerDidUpdateState(_ central: CBCentralManager){
-        
-        var getCurrentState: String? = nil
-
-        switch central.state{
-            case .unauthorized : getCurrentState = "UNAUTHORIZED";
-                    
-            case .unsupported : getCurrentState = "UNSUPPORTED";
-            
-            case .unknown : getCurrentState = "UNKNOWN";
-            
-            case .resetting : getCurrentState = "RESETTING";
-            
-            case .poweredOn : getCurrentState = "ENABLE";
-            
-            case .poweredOff : getCurrentState = "DISABLE";
-            
-            default: getCurrentState = "UNSUPPORTED";
-        }
-        
-        
-        self.sendMyEvent(getCurrentState!);
-        
-    }
-    
-    @objc
-    func sendMyEvent(_ getCurrentState: String) {
-        if hasListeners {
-            self.sendEvent(withName: "bluetoothDidUpdateState", body: ["status": getCurrentState])
-        }
-    }
-    
     @objc(bluetoothStatus:withResolver:withRejecter:)
     func bluetoothStatus(params:String?, resolve: @escaping RCTPromiseResolveBlock,
                          reject: RCTPromiseRejectBlock) -> Void {
         
         responsePromise = resolve
         
+        if(manager == nil){
+            
+            let showPermissionAlert = false
+            let options = [CBCentralManagerOptionShowPowerAlertKey: showPermissionAlert]
+            
+            manager = CBCentralManager(delegate: self, queue: nil, options: options)
+            
+            sleep(3);
+        }
+        
         if(params==nil){
             
-            if(self.manager == nil){
+          /*if(self.manager == nil){
                 reject("Failed:", "Something went wrong #IOSBluetooth1", nil);
             }
             else{
                 self.getBluetoothStatus()
-            }
+            }*/
+            
+            self.getBluetoothStatus()
         }
         else{
             
@@ -91,6 +73,39 @@ class InstantpayBluetooth: RCTEventEmitter, CBCentralManagerDelegate {
                 reject("Failed:", "\(error.localizedDescription)", nil);
             }
         }
+    }
+    
+    func getBluetoothStatus() -> Void{
+        
+        var getCurrentState: String? = nil
+        var getMessage: String? = nil
+        
+        switch self.manager.state {
+            
+            case CBManagerState.unauthorized : getCurrentState = "UNAUTHORIZED";getMessage = "Unauthorized Bluetooth";
+                
+            case CBManagerState.unsupported : getCurrentState = "UNSUPPORTED";getMessage = "Unsupported Bluetooth";
+            
+            case CBManagerState.unknown : getCurrentState = "UNKNOWN";getMessage = "Unknown Bluetooth";
+            
+            case CBManagerState.resetting : getCurrentState = "RESETTING";getMessage = "Resetting Bluetooth";
+            
+            case CBManagerState.poweredOn : getCurrentState = "ENABLE";getMessage = "Bluetooth is ON";
+            
+            case CBManagerState.poweredOff : getCurrentState = "DISABLE";getMessage = "Bluetooth is OFF";
+            
+            default: getCurrentState = "UNSUPPORTED";getMessage = "Unknown Bluetooth";
+            
+        }
+        
+        //self.logPrint(value: getMessage)
+        let output: [String:String] = [
+            "status" :getCurrentState!
+        ];
+        
+        let getData = self.convertDictToJson(output)
+        
+        self.resolver(message:  getMessage!, status: "SUCCESS", data: getData)
     }
     
     func resolver(message:String,
@@ -173,36 +188,35 @@ class InstantpayBluetooth: RCTEventEmitter, CBCentralManagerDelegate {
         return dictionary as! NSDictionary;
     }
     
-    func getBluetoothStatus() -> Void{
+    func centralManagerDidUpdateState(_ central: CBCentralManager){
         
         var getCurrentState: String? = nil
-        var getMessage: String? = nil
-        
-        switch self.manager.state {
+
+        switch central.state{
+            case .unauthorized : getCurrentState = "UNAUTHORIZED";
+                    
+            case .unsupported : getCurrentState = "UNSUPPORTED";
             
-            case CBManagerState.unauthorized : getCurrentState = "UNAUTHORIZED";getMessage = "Unauthorized Bluetooth";
-                
-            case CBManagerState.unsupported : getCurrentState = "UNSUPPORTED";getMessage = "Unsupported Bluetooth";
+            case .unknown : getCurrentState = "UNKNOWN";
             
-            case CBManagerState.unknown : getCurrentState = "UNKNOWN";getMessage = "Unknown Bluetooth";
+            case .resetting : getCurrentState = "RESETTING";
             
-            case CBManagerState.resetting : getCurrentState = "RESETTING";getMessage = "Resetting Bluetooth";
+            case .poweredOn : getCurrentState = "ENABLE";
             
-            case CBManagerState.poweredOn : getCurrentState = "ENABLE";getMessage = "Bluetooth is ON";
+            case .poweredOff : getCurrentState = "DISABLE";
             
-            case CBManagerState.poweredOff : getCurrentState = "DISABLE";getMessage = "Bluetooth is OFF";
-            
-            default: getCurrentState = "UNSUPPORTED";getMessage = "Unknown Bluetooth";
-            
+            default: getCurrentState = "UNSUPPORTED";
         }
         
-        //self.logPrint(value: getMessage)
-        let output: [String:String] = [
-            "status" :getCurrentState!
-        ];
         
-        let getData = self.convertDictToJson(output)
+        self.sendMyEvent(getCurrentState!);
         
-        self.resolver(message:  getMessage!, status: "SUCCESS", data: getData)
+    }
+    
+    @objc
+    func sendMyEvent(_ getCurrentState: String) {
+        if hasListeners {
+            self.sendEvent(withName: "bluetoothDidUpdateState", body: ["status": getCurrentState])
+        }
     }
 }
